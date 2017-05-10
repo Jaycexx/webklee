@@ -30,7 +30,14 @@ app.post('/generateTest', (req, res) => {
     console.log('LOG: Writing to test.c..');
 
     //执行clang -emit-llvm -g -c test.c -o test.bc
-    cp.execSync('clang -emit-llvm -g -c ../test.c -o ../test.bc', { encoding: 'utf-8' });
+    try {
+      cp.execSync('clang -emit-llvm -g -c ../test.c -o ../test.bc', { encoding: 'utf-8' });
+    } catch (err) {
+      console.log(err);
+      res.render('error', {
+        err: err,
+      });
+    }
 
     co(function* () {
       const p1 = new Promise((resolve, reject) => {
@@ -65,7 +72,7 @@ function getTestInfo(resolve) {
   let ret = {};
   //获取信息字符串
   cp.execSync('klee ../test.bc', { encoding: 'utf-8' });
- console.log('LOG: Executing klee ../test.bc\n');
+  console.log('LOG: Executing klee ../test.bc\n');
   //读取info里面的内容
   let str = cp.execSync('cat ../klee-last/info', { encoding: 'utf-8' });
   console.log('LOG: Executing cat ../klee-last/info\n', str);
