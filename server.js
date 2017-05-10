@@ -87,7 +87,7 @@ function getTestcase(resolve) {
     let str;
     let r1 = /data: (-?\d+)/;
     for (let file of files) {
-      let cmd = 'LOG: ktest-tool --write-ints ' + file;
+      let cmd = 'ktest-tool --write-ints ' + file;
       str = cp.execSync(cmd, { encoding: 'utf-8' });
       console.log('LOG: Reading ktest file..\n', str);
       //str = fs.readFileSync(file, 'utf-8');
