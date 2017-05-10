@@ -70,8 +70,8 @@ function getTestInfo(resolve) {
   let str = cp.execSync('cat ../klee-last/info', { encoding: 'utf-8' });
   console.log('LOG: Executing cat ../klee-last/info\n', str);
   //let str = fs.readFileSync('./doc/kleebc.txt', 'utf-8');
-  let r1 = /explored paths = (\d+)/, r2 = /completed\cpaths\s=\s(\d+)/, r3 = /tests\s=\s(\d+)/;
-  ret.explorePath = str.match(r1);
+  let r1 = /explored paths = (\d+)/, r2 = /completed paths = (\d+)/, r3 = /tests = (\d+)/;
+  ret.explorePath = str.match(r1)[1];
   console.log('LOG: Match explore path:', ret.explorePath);
   ret.completePath = str.match(r2)[1];
   console.log('LOG: Match complete path:', ret.completePath);
@@ -89,7 +89,7 @@ function getTestcase(resolve) {
     for (let file of files) {
       let cmd = 'LOG: ktest-tool --write-ints ' + file;
       str = cp.execSync(cmd, { encoding: 'utf-8' });
-      console.log('LOG: Processing ktest file..\n', str);
+      console.log('LOG: Reading ktest file..\n', str);
       //str = fs.readFileSync(file, 'utf-8');
       testcase.push(str.match(r1)[1]);
       console.log('LOG: Match testcase:', str.match(r1));
