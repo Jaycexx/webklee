@@ -64,7 +64,7 @@ app.listen(3000, () => {
 function getTestInfo(resolve) {
   let ret = {};
   //获取信息字符串
-  let str = cp.execSync('klee test.bc', { encoding: 'utf-8' });
+  let str = cp.execSync('klee ../test.bc', { encoding: 'utf-8' });
   //let str = fs.readFileSync('./doc/kleebc.txt', 'utf-8');
   let r1 = /explored paths = (\d+)/, r2 = /completed\cpaths\s=\s(\d+)/, r3 = /tests\s=\s(\d+)/;
   ret.explorePath = str.match(r1)[1];
