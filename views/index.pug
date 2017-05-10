@@ -1,0 +1,30 @@
+html
+  head
+    title 基于Web的C程序测试用例自动生成方法研究与实现
+    link(
+      rel='stylesheet'
+      type='text/css'
+      href='/bootstrap.min.css'
+    )
+    link(
+      rel='stylesheet'
+      type='text/css'
+      href='/font-awesome.min.css'
+    )
+    //sdf
+    link(
+      rel='stylesheet'
+      type='text/css'
+      href='/search.css'
+    )
+    
+  body
+    div.main
+      h1 基于Web的C程序测试用例自动生成方法研究与实现
+      div(class='row' style='margin-top:100px')
+        div(class='text-center')
+          p klee头文件已经后台引入，请直接输入测试代码
+          form(action='/generateTest' method='post')
+            textarea(cols='60' rows='10' name='code')
+            div.text-center
+              button(class='btn btn-primary' type='submit') 生成测试用例

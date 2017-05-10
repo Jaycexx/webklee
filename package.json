@@ -1,0 +1,23 @@
+{
+  "name": "klee",
+  "version": "1.0.0",
+  "description": "",
+  "main": "mime.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "glob": "^7.1.1",
+    "jade": "^1.11.0",
+    "pug": "^2.0.0-rc.1",
+    "socket.io": "^1.7.4"
+  }
+}
