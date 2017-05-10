@@ -83,7 +83,7 @@ function getTestInfo(resolve) {
 function getTestcase(resolve) {
   let testcase = [];
   //获取字符data: 0
-  glob('doc/test*.ktest', (err, files) => {
+  glob('../klee-last/test*.ktest', (err, files) => {
     let str;
     let r1 = /data: (-?\d+)/;
     for (let file of files) {
