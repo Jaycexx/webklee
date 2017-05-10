@@ -65,9 +65,10 @@ function getTestInfo(resolve) {
   let ret = {};
   //获取信息字符串
   cp.execSync('klee ../test.bc', { encoding: 'utf-8' });
-  console.log('LOG: Executing klee ../test.bc\n', str);
+ console.log('LOG: Executing klee ../test.bc\n');
   //读取info里面的内容
   let str = cp.execSync('cat ../klee-last/info', { encoding: 'utf-8' });
+  console.log('LOG: Executing cat ../klee-last/info\n', str);
   //let str = fs.readFileSync('./doc/kleebc.txt', 'utf-8');
   let r1 = /explored paths = (\d+)/, r2 = /completed\cpaths\s=\s(\d+)/, r3 = /tests\s=\s(\d+)/;
   ret.explorePath = str.match(r1);
