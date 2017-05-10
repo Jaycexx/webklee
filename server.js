@@ -65,12 +65,12 @@ function getTestInfo(resolve) {
   let ret = {};
   //获取信息字符串
   let str = cp.execSync('klee ../test.bc', { encoding: 'utf-8' });
+  console.log('Reading kleebc.txt..\n', str);
   //let str = fs.readFileSync('./doc/kleebc.txt', 'utf-8');
   let r1 = /explored paths = (\d+)/, r2 = /completed\cpaths\s=\s(\d+)/, r3 = /tests\s=\s(\d+)/;
-  ret.explorePath = str.match(r1)[1];
+  ret.explorePath = str.match(r1);
   ret.completePath = str.match(r2)[1];
   ret.testcase = str.match(r3)[1];
-  console.log('Reading kleebc.txt..\n', str);
   console.log('Match explore path:', ret.explorePath);
   console.log('Match complete path:', ret.completePath);
   console.log('Match testcase:', ret.testcase);
@@ -86,9 +86,9 @@ function getTestcase(resolve) {
     for (let file of files) {
       let cmd = 'ktest-tool --write-ints ' + file;
       str = cp.execSync(cmd, { encoding: 'utf-8' });
+      console.log('Reading ktest file..\n', str);
       //str = fs.readFileSync(file, 'utf-8');
       testcase.push(str.match(r1)[1]);
-      console.log('Reading ktest file..\n', str);
       console.log('Match testcase:', str.match(r1));
     }
     console.log('testcase:', testcase);
