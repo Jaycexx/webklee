@@ -27,7 +27,7 @@ app.post('/generateTest', (req, res) => {
   let code = '#include "klee_src/include/klee/klee.h" \t\n' + req.body.code;
   fs.writeFile('../test.c', code, (err) => {
     if (err) throw err;
-    console.log('Writing to test.c..');
+    console.log('LOG: Writing to test.c..');
 
     //执行clang -emit-llvm -g -c test.c -o test.bc
     cp.execSync('clang -emit-llvm -g -c ../test.c -o ../test.bc', { encoding: 'utf-8' });
@@ -43,8 +43,8 @@ app.post('/generateTest', (req, res) => {
       });
       let testInfo, testcase;
       [testInfo, testcase] = yield [p1, p2];
-      console.log('resolve testInfo:', testInfo);
-      console.log('resolve testcase:', testcase);
+      console.log('LOG: resolve testInfo:', testInfo);
+      console.log('LOG: resolve testcase:', testcase);
       let rate = (parseInt(testInfo.completePath) / parseInt(testInfo.explorePath)) * 100;
       //输出到页面模板
       res.render('testcase', {
@@ -65,15 +65,15 @@ function getTestInfo(resolve) {
   let ret = {};
   //获取信息字符串
   let str = cp.execSync('klee ../test.bc', { encoding: 'utf-8' });
-  console.log('Reading kleebc.txt..\n', str);
+  console.log('LOG: Executing klee ../test.bc\n', str);
   //let str = fs.readFileSync('./doc/kleebc.txt', 'utf-8');
   let r1 = /explored paths = (\d+)/, r2 = /completed\cpaths\s=\s(\d+)/, r3 = /tests\s=\s(\d+)/;
   ret.explorePath = str.match(r1);
+  console.log('LOG: Match explore path:', ret.explorePath);
   ret.completePath = str.match(r2)[1];
+  console.log('LOG: Match complete path:', ret.completePath);
   ret.testcase = str.match(r3)[1];
-  console.log('Match explore path:', ret.explorePath);
-  console.log('Match complete path:', ret.completePath);
-  console.log('Match testcase:', ret.testcase);
+  console.log('LOG: Match testcase:', ret.testcase);
   resolve(ret);
 }
 
@@ -84,14 +84,14 @@ function getTestcase(resolve) {
     let str;
     let r1 = /data: (-?\d+)/;
     for (let file of files) {
-      let cmd = 'ktest-tool --write-ints ' + file;
+      let cmd = 'LOG: ktest-tool --write-ints ' + file;
       str = cp.execSync(cmd, { encoding: 'utf-8' });
-      console.log('Reading ktest file..\n', str);
+      console.log('LOG: Processing ktest file..\n', str);
       //str = fs.readFileSync(file, 'utf-8');
       testcase.push(str.match(r1)[1]);
-      console.log('Match testcase:', str.match(r1));
+      console.log('LOG: Match testcase:', str.match(r1));
     }
-    console.log('testcase:', testcase);
+    console.log('LOG: All testcase:', testcase);
     resolve(testcase);
   });
 }
