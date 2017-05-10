@@ -1,5 +1,7 @@
 const express = require('express');
 const fs = require('fs');
+const cp = require('child_process');
+
 const bodyParser = require('body-parser');
 const glob = require('glob');
 const co = require('co');
@@ -23,9 +25,12 @@ app.get('/', (req, res) => {
 app.post('/generateTest', (req, res) => {
   console.log(req.body.code);
   let code = '#include "klee_src/include/klee/klee.h" \t\n' + req.body.code;
-  fs.writeFile('test.c', code, (err) => {
+  fs.writeFile('../test.c', code, (err) => {
     if (err) throw err;
     console.log('Writing to test.c..');
+
+    //执行clang -emit-llvm -g -c test.c -o test.bc
+    sp.execSync('clang -emit-llvm -g -c ../test.c -o ../test.bc', { encoding: 'utf-8' });
 
     co(function* () {
       const p1 = new Promise((resolve, reject) => {
@@ -42,12 +47,12 @@ app.post('/generateTest', (req, res) => {
       console.log('resolve testcase:', testcase);
       let rate = (parseInt(testInfo.completePath) / parseInt(testInfo.explorePath)) * 100;
       //输出到页面模板
-      res.render('testcase', { 
+      res.render('testcase', {
         testInfo: testInfo,
         testcase: testcase,
       });
     })
-    
+
   });
 });
 
@@ -59,7 +64,8 @@ app.listen(3000, () => {
 function getTestInfo(resolve) {
   let ret = {};
   //获取信息字符串
-  let str = fs.readFileSync('./doc/kleebc.txt', 'utf-8');
+  let str = sp.execSync('klee test.bc', { encoding: 'utf-8' });
+  //let str = fs.readFileSync('./doc/kleebc.txt', 'utf-8');
   let r1 = /explored paths = (\d+)/, r2 = /completed\spaths\s=\s(\d+)/, r3 = /tests\s=\s(\d+)/;
   ret.explorePath = str.match(r1)[1];
   ret.completePath = str.match(r2)[1];
@@ -74,11 +80,13 @@ function getTestInfo(resolve) {
 function getTestcase(resolve) {
   let testcase = [];
   //获取字符data: 0
-  glob('doc/test*.txt', (err, files) => {
+  glob('doc/test*.ktest', (err, files) => {
     let str;
     let r1 = /data: (-?\d+)/;
     for (let file of files) {
-      str = fs.readFileSync(file, 'utf-8');
+      let cmd = 'ktest-tool --write-ints ' + file;
+      str = sp.execSync(cmd, { encoding: 'utf-8' });
+      //str = fs.readFileSync(file, 'utf-8');
       testcase.push(str.match(r1)[1]);
       console.log('Reading ktest file..\n', str);
       console.log('Match testcase:', str.match(r1));
