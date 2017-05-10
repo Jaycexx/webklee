@@ -30,7 +30,7 @@ app.post('/generateTest', (req, res) => {
     console.log('Writing to test.c..');
 
     //执行clang -emit-llvm -g -c test.c -o test.bc
-    sp.execSync('clang -emit-llvm -g -c ../test.c -o ../test.bc', { encoding: 'utf-8' });
+    cp.execSync('clang -emit-llvm -g -c ../test.c -o ../test.bc', { encoding: 'utf-8' });
 
     co(function* () {
       const p1 = new Promise((resolve, reject) => {
@@ -64,9 +64,9 @@ app.listen(3000, () => {
 function getTestInfo(resolve) {
   let ret = {};
   //获取信息字符串
-  let str = sp.execSync('klee test.bc', { encoding: 'utf-8' });
+  let str = cp.execSync('klee test.bc', { encoding: 'utf-8' });
   //let str = fs.readFileSync('./doc/kleebc.txt', 'utf-8');
-  let r1 = /explored paths = (\d+)/, r2 = /completed\spaths\s=\s(\d+)/, r3 = /tests\s=\s(\d+)/;
+  let r1 = /explored paths = (\d+)/, r2 = /completed\cpaths\s=\s(\d+)/, r3 = /tests\s=\s(\d+)/;
   ret.explorePath = str.match(r1)[1];
   ret.completePath = str.match(r2)[1];
   ret.testcase = str.match(r3)[1];
@@ -85,7 +85,7 @@ function getTestcase(resolve) {
     let r1 = /data: (-?\d+)/;
     for (let file of files) {
       let cmd = 'ktest-tool --write-ints ' + file;
-      str = sp.execSync(cmd, { encoding: 'utf-8' });
+      str = cp.execSync(cmd, { encoding: 'utf-8' });
       //str = fs.readFileSync(file, 'utf-8');
       testcase.push(str.match(r1)[1]);
       console.log('Reading ktest file..\n', str);
