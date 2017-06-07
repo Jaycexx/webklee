@@ -1,15 +1,22 @@
-const express = require('express');
-const fs = require('fs');
-const cp = require('child_process');
+//nodejs
 
-const bodyParser = require('body-parser');
-const glob = require('glob');
-const co = require('co');
+/////////////////////引入模块//////////////////////////
+const express = require('express'); //web框架
+const fs = require('fs'); //nodejs内置，文件操作
+const cp = require('child_process'); //多线程
 
-let app = express();
+const bodyParser = require('body-parser'); //json解析
+const glob = require('glob'); //文件查找
+const co = require('co'); //异步编程库
+/////////////////////引入模块//////////////////////////
 
-app.set('views', './views');
-app.set('view engine', 'pug');
+
+///////////////////////配置express应用//////////////////////////////
+
+let app = express(); //创建一个express应用
+
+app.set('views', './views');//设置视图文件所在位置
+app.set('view engine', 'pug');//设置视图引擎
 
 //中间件
 app.use(express.static('res'));
@@ -17,7 +24,10 @@ app.use(express.static('res'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-//route
+
+///////////////////////配置express应用//////////////////////////////
+
+///////////////////////路由处理**//////////////////////////////
 app.get('/', (req, res) => {
   res.render('index', {});
 });
@@ -25,7 +35,7 @@ app.get('/', (req, res) => {
 app.post('/generateTest', (req, res) => {
   console.log(req.body.code);
   let code = '#include "klee_src/include/klee/klee.h" \t\n' + req.body.code;
-  fs.writeFile('../test.c', code, (err) => {
+  fs.writeFile('../test.c', code, (err) => { //把代码写入到c语言文件
     if (err) throw err;
     console.log('LOG: Writing to test.c..');
 
@@ -42,17 +52,19 @@ app.post('/generateTest', (req, res) => {
     co(function* () {
       const p1 = new Promise((resolve, reject) => {
         //执行命令，获取输出字符；获取生成的测试用例数量，计算覆盖率
-        getTestInfo(resolve);
+        getTestInfo(resolve); //定义见下面
       });
       const p2 = new Promise((resolve, reject) => {
         //遍历测试用例，取出测试用例
-        getTestcase(resolve);
+        getTestcase(resolve); //定义见下面
       });
       let testInfo, testcase;
       [testInfo, testcase] = yield [p1, p2];
       console.log('LOG: resolve testInfo:', testInfo);
       console.log('LOG: resolve testcase:', testcase);
-      let rate = (parseInt(testInfo.completePath) / parseInt(testInfo.explorePath)) * 100;
+      // let rate = (parseInt(testInfo.completePath) / parseInt(testInfo.explorePath)) * 100;
+      let rate = (parseInt(testInfo.completePath) / 3 * 100;
+
       //输出到页面模板
       res.render('testcase', {
         testInfo: testInfo,
@@ -62,10 +74,13 @@ app.post('/generateTest', (req, res) => {
 
   });
 });
+///////////////////////路由处理//////////////////////////////
 
+//////////////////////监听3000端口//////////////////////////////
 app.listen(3000, () => {
   console.log('Listening on 3000..');
 });
+//////////////////////监听3000端口//////////////////////////////
 
 ////////////////////其他函数///////////////////////
 function getTestInfo(resolve) {
